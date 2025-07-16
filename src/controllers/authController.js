@@ -7,7 +7,7 @@ import VerificationToken from '../models/verificationState.js';
 import { sendPasswordResetEmail } from '../utils/emailService.js';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
-
+import ElectionState from '../models/electionState.js';
 import dotenv from 'dotenv'
 import { sendVerificationEmail } from '../utils/emailVerification.js';
 
