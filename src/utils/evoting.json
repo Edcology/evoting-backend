@@ -1,0 +1,479 @@
+{
+  "address": "Kah4xoymyxGidXqMENUpn4LGPUHukzXyfM7K1iPAVEr",
+  "metadata": {
+    "name": "evoting",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "close_election",
+      "discriminator": [
+        62,
+        216,
+        57,
+        149,
+        90,
+        21,
+        40,
+        127
+      ],
+      "accounts": [
+        {
+          "name": "election",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  108,
+                  101,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  118,
+                  54
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "end_election",
+      "discriminator": [
+        26,
+        248,
+        92,
+        184,
+        33,
+        221,
+        94,
+        215
+      ],
+      "accounts": [
+        {
+          "name": "election",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  108,
+                  101,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  118,
+                  54
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "get_my_votes",
+      "discriminator": [
+        106,
+        210,
+        110,
+        63,
+        138,
+        116,
+        54,
+        66
+      ],
+      "accounts": [
+        {
+          "name": "election",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  108,
+                  101,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  118,
+                  54
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "voter",
+          "signer": true
+        }
+      ],
+      "args": [],
+      "returns": {
+        "vec": {
+          "defined": {
+            "name": "VoteRecord"
+          }
+        }
+      }
+    },
+    {
+      "name": "init_election",
+      "discriminator": [
+        216,
+        198,
+        149,
+        77,
+        71,
+        46,
+        62,
+        150
+      ],
+      "accounts": [
+        {
+          "name": "election",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  108,
+                  101,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  118,
+                  54
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "posts",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "Post"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "start_election",
+      "discriminator": [
+        84,
+        120,
+        181,
+        159,
+        113,
+        70,
+        98,
+        143
+      ],
+      "accounts": [
+        {
+          "name": "election",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  108,
+                  101,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  118,
+                  54
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "vote",
+      "discriminator": [
+        227,
+        110,
+        155,
+        23,
+        136,
+        126,
+        172,
+        25
+      ],
+      "accounts": [
+        {
+          "name": "election",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  108,
+                  101,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  118,
+                  54
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "voter",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "post_index",
+          "type": "u8"
+        },
+        {
+          "name": "candidate_index",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Election",
+      "discriminator": [
+        68,
+        191,
+        164,
+        85,
+        35,
+        105,
+        152,
+        202
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "AlreadyVotedForPost",
+      "msg": "You have already voted for this post!"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidCandidate",
+      "msg": "Invalid candidate index!"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidPost",
+      "msg": "Invalid post index!"
+    },
+    {
+      "code": 6003,
+      "name": "UnauthorizedAdmin",
+      "msg": "Only the admin can perform this action!"
+    },
+    {
+      "code": 6004,
+      "name": "ElectionNotActive",
+      "msg": "The election is not currently active!"
+    },
+    {
+      "code": 6005,
+      "name": "ElectionAlreadyActive",
+      "msg": "The election is already active!"
+    },
+    {
+      "code": 6006,
+      "name": "ElectionStillActive",
+      "msg": "Cannot close an active election!"
+    }
+  ],
+  "types": [
+    {
+      "name": "Election",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "posts",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "PostState"
+                }
+              }
+            }
+          },
+          {
+            "name": "voted_posts",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "VoteRecord"
+                }
+              }
+            }
+          },
+          {
+            "name": "is_active",
+            "type": "bool"
+          },
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "init_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "start_timestamp",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "end_timestamp",
+            "type": {
+              "option": "i64"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Post",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "candidates",
+            "type": {
+              "vec": "string"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PostState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "candidates",
+            "type": {
+              "vec": "string"
+            }
+          },
+          {
+            "name": "results",
+            "type": {
+              "vec": "u64"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteRecord",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "post_index",
+            "type": "u8"
+          },
+          {
+            "name": "candidate_index",
+            "type": "u8"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}
