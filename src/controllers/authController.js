@@ -162,11 +162,11 @@ export const registerAdmin = async (req, res) => {
 // Login user
 export const login = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    
-    // Find user by username
-    const user = await User.findOne({ username });
-    
+    const { identifier, password } = req.body;
+
+    // Find user by username or email
+    const user = await User.findOne({ $or: [{ username: identifier }, { email: identifier.toString().toLowerCase().trim() }] });
+
     if (!user) {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
