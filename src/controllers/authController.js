@@ -88,26 +88,26 @@ export const register = async (req, res) => {
 export const registerAdmin = async (req, res) => {
   try {
     const { username, email, password, adminSecret } = req.body;
-    
+
     // Add additional layer of security with admin secret
     if (adminSecret !== process.env.ADMIN_SECRET) {
       return res.status(403).json({ message: 'Invalid admin secret' });
     }
-    
+
     // Check if user already exists
-    const existingUser = await User.findOne({ 
-      $or: [{ email }, { username }]
+    const existingUser = await User.findOne({
+      $or: [{ email }, { username }],
     });
-    
+
     if (existingUser) {
-      return res.status(400).json({ 
-        message: 'User with this email or username already exists' 
+      return res.status(400).json({
+        message: 'User with this email or username already exists',
       });
     }
-    
+
     // Generate a Solana wallet for the admin
     const wallet = solanaUtils.generateWallet();
-    
+
     // Create a new admin user
     const user = new User({
       username,
@@ -116,9 +116,9 @@ export const registerAdmin = async (req, res) => {
       walletPublicKey: wallet.publicKey,
       walletSecretKey: encryptWalletSecret(wallet.secretKey),
       isAdmin: true,
-      isVerified: false
+      isVerified: false,
     });
-    
+
     await user.save();
 
     // Generate verification token
@@ -127,31 +127,41 @@ export const registerAdmin = async (req, res) => {
     // Create verification token document
     const verification = new VerificationToken({
       user: user._id,
-      token: verificationToken
+      token: verificationToken,
     });
 
     await verification.save();
 
-    // Send verification email
-    await sendVerificationEmail(user, verificationToken);
-    
+    // Send verification email — don't let a flaky/blocked SMTP connection
+    // fail the whole registration. The user + token are already persisted.
+    let emailSent = true;
+    try {
+      await sendVerificationEmail(user, verificationToken);
+    } catch (emailError) {
+      emailSent = false;
+      console.error('Failed to send verification email:', emailError);
+    }
+
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user._id }, 
-      process.env.JWT_SECRET, 
+      { userId: user._id },
+      process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
-    
+
     res.status(201).json({
-      message: 'Admin registered successfully, please check your email to verify your account.',
+      message: emailSent
+        ? 'Admin registered successfully, please check your email to verify your account.'
+        : 'Admin registered successfully, but the verification email could not be sent. You can request a new one later.',
+      emailSent,
       token,
       user: {
         id: user._id,
         username: user.username,
         email: user.email,
         walletPublicKey: user.walletPublicKey,
-        isAdmin: user.isAdmin
-      }
+        isAdmin: user.isAdmin,
+      },
     });
   } catch (error) {
     console.error('Admin registration error:', error);
