@@ -1,22 +1,12 @@
-import crypto from 'crypto';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendVerificationEmail = async (user, verificationToken) => {
-  // Create a verification link
   const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
 
-  // Configure email transporter
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  });
-
-  // Email options
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
+  const { data, error } = await resend.emails.send({
+    from: process.env.EMAIL_FROM,
     to: user.email,
     subject: 'Verify Your Email',
     html: `
@@ -25,9 +15,13 @@ export const sendVerificationEmail = async (user, verificationToken) => {
       <a href="${verificationLink}">Verify Email</a>
       <p>This link will expire in 1 hour.</p>
       <p>If you did not create an account, please ignore this email.</p>
-    `
-  };
+    `,
+  });
 
-  // Send email
-  await transporter.sendMail(mailOptions);
+  if (error) {
+    // Throw so the caller's try/catch in registerAdmin can handle it
+    throw new Error(`Resend failed: ${error.message}`);
+  }
+
+  return data;
 };
