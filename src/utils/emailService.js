@@ -1,26 +1,26 @@
-import { Resend } from 'resend';
+import brevo from '@getbrevo/brevo';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const apiInstance = new brevo.TransactionalEmailsApi();
+apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
 export const sendPasswordResetEmail = async (email, resetLink) => {
-  const { data, error } = await resend.emails.send({
-    from: process.env.EMAIL_FROM,
-    to: email,
-    subject: 'Password Reset',
-    html: `
-      <p>You requested a password reset</p>
-      <p>Click the link below to reset your password:</p>
-      <a href="${resetLink}">Reset Password</a>
-      <p>This link will expire in 1 hour</p>
-    `,
-  });
+  const sendSmtpEmail = new brevo.SendSmtpEmail();
+  sendSmtpEmail.subject = 'Password Reset';
+  sendSmtpEmail.htmlContent = `
+    <p>You requested a password reset</p>
+    <p>Click the link below to reset your password:</p>
+    <a href="${resetLink}">Reset Password</a>
+    <p>This link will expire in 1 hour</p>
+  `;
+  sendSmtpEmail.sender = { name: 'Your App', email: process.env.EMAIL_FROM };
+  sendSmtpEmail.to = [{ email }];
 
-  if (error) {
-    throw new Error(`Resend failed: ${error.message}`);
+  try {
+    return await apiInstance.sendTransacEmail(sendSmtpEmail);
+  } catch (error) {
+    throw new Error(`Brevo failed: ${error.message}`);
   }
-
-  return data;
 };
