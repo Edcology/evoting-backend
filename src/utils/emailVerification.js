@@ -1,15 +1,15 @@
-import brevo from '@getbrevo/brevo';
+import { TransactionalEmailsApi, TransactionalEmailsApiApiKeys, SendSmtpEmail } from '@getbrevo/brevo';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const apiInstance = new brevo.TransactionalEmailsApi();
-apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+const apiInstance = new TransactionalEmailsApi();
+apiInstance.setApiKey(TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
 export const sendVerificationEmail = async (user, verificationToken) => {
   const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
 
-  const sendSmtpEmail = new brevo.SendSmtpEmail();
+  const sendSmtpEmail = new SendSmtpEmail();
   sendSmtpEmail.subject = 'Verify Your Email';
   sendSmtpEmail.htmlContent = `
     <h1>Email Verification</h1>
@@ -24,7 +24,6 @@ export const sendVerificationEmail = async (user, verificationToken) => {
   try {
     return await apiInstance.sendTransacEmail(sendSmtpEmail);
   } catch (error) {
-    // Throw so the caller's try/catch in registerAdmin can handle it
     throw new Error(`Brevo failed: ${error.message}`);
   }
 };
